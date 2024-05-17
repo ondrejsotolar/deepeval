@@ -12,7 +12,7 @@ from deepeval.scorer import Scorer
 
 
 class MMLU(DeepEvalBaseBenchmark):
-    def __init__(self, tasks: List[MMLUTask] = None, n_shots: int = 5):
+    def __init__(self, tasks: List[MMLUTask] = None, n_shots: int = 5, template: str = "default"):
         assert n_shots <= 5, "MMLU only supports n_shots <= 5"
         super().__init__()
         self.tasks: List[MMLUTask] = list(MMLUTask) if tasks is None else tasks
@@ -23,6 +23,7 @@ class MMLU(DeepEvalBaseBenchmark):
         self.predictions: Optional[pd.DataFrame] = None
         self.task_scores: Optional[pd.DataFrame] = None
         self.overall_score: Optional[float] = None
+        self.template = template
 
     def evaluate(self, model: DeepEvalBaseLLM) -> Dict:
         overall_correct_predictions = 0
@@ -77,6 +78,7 @@ class MMLU(DeepEvalBaseBenchmark):
             input=golden.input,
             task=task,
             n_shots=self.n_shots,
+            template = self.template
         )
         prediction = model.generate(prompt)[0]
 

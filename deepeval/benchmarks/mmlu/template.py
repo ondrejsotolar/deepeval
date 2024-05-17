@@ -9,16 +9,21 @@ class MMLUTemplate:
 
     @staticmethod
     def generate_output(
-        input: str, train_set: object, task: MMLUTask, n_shots: int
+        input: str, train_set: object, task: MMLUTask, n_shots: int, template: str
     ):
-        prompt = "The following are multiple choice questions (with answers) about{}.\n\n"
-        prompt = prompt.format(MMLUTemplate.format_subject(task.value))
+        if template == "default":
+            prompt = "Answer last multiple choice question (with answers) about {}. " \
+                 "Output 'A', 'B', 'C', or 'D'. Full answer not needed. These are some examples to help you answer: \n\n"
+        else:
+            prompt = template
+        if "{}" in prompt:
+            prompt = prompt.format(MMLUTemplate.format_subject(task.value))
         for i in range(n_shots):
             prompt += MMLUTemplate.format_question(train_set[i])
         prompt += input
 
         # define ouptut confinement
-        prompt += "Output 'A', 'B', 'C', or 'D'. Full answer not needed."
+        # prompt += "Output 'A', 'B', 'C', or 'D'. Full answer not needed."
         return prompt
 
     @staticmethod
